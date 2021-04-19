@@ -5,8 +5,7 @@ import mongoengine
 from bson import ObjectId
 from datetime import datetime, date
 
-from models import ToDo
-
+from .models import ToDo
 
 def lambda_handler(event, context):
     """
@@ -17,14 +16,11 @@ def lambda_handler(event, context):
     )
 
     status = {"get": 200, "post": 200, "put": 200, "delete": 404}
-    message = ([i.serialize() for i in ToDo.objects.all()],)
     method = event["httpMethod"]
 
-    try:
-        f = json.loads(event["body"])
-        querystring_parameters = event["multiValueQueryStringParameters"]
-    except TypeError:
-        pass
+    f = json.loads(event["body"])
+    querystring_parameters = event["multiValueQueryStringParameters"]
+
 
     if method == "POST":
         deadline = [int(i) for i in f["deadline"].split("-")]
@@ -54,6 +50,9 @@ def lambda_handler(event, context):
         _id = ObjectId(querystring_parameters["id"][0])
         ToDo.objects(id=_id).first().delete()
         message = "Object deleted sucessfully"
+
+    else:
+        message = ([i.serialize() for i in ToDo.objects.all()],)
 
     return {
         "statusCode": status[method.lower()],
