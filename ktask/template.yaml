@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  python3.8
+
+  Sample SAM Template for ktask
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 60
+
+Resources:
+  crudapi:
+    Type: AWS::Serverless::Function
+    Properties: 
+      PackageType: Image
+      Events:
+        Read:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: get
+        Create:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: post
+        Update:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: put
+        Delete:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: delete
+
+
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./crudapi
+      DockerTag: todocrud
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  # HelloWorldApi:
+  #   Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+  #   Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+  # HelloWorldFunction:
+  #   Description: "Hello World Lambda Function ARN"
+  #   Value: !GetAtt HelloWorldFunction.Arn
+  # HelloWorldFunctionIamRole:
+  #   Description: "Implicit IAM Role created for Hello World function"
+  #   Value: !GetAtt HelloWorldFunctionRole.Arn
+
+
+  crudapiApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/fibo/"
+  crudapi:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt crudzin.Arn
+  crudapiIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt crudzin.Arn
