@@ -16,15 +16,13 @@ class ToDo(Document):
     notification = DateField()
     status = BooleanField()
 
-    @classmethod
-    def get_by_id(cls, id: str) -> any:
-        return cls.objects.with_id(id)
 
     def serialize(self) -> dict:
         return {
             "id": str(self.pk),
             "name": self.name,
             "body": self.body,
+            "owner": self.owner,
             "contribuitors": self.contribuitors,
             "created_at": str(self.created_at),
             "lastupdate": str(self.last_update),

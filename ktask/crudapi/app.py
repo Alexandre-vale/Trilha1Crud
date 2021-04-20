@@ -5,7 +5,8 @@ import mongoengine
 from bson import ObjectId
 from datetime import datetime, date
 
-from .models import ToDo
+from models import ToDo
+
 
 def lambda_handler(event, context):
     """
