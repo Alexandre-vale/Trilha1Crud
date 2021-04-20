@@ -6,12 +6,20 @@ from bson import ObjectId
 from datetime import datetime, date
 
 from models import ToDo
+import filters
+
 
 
 def lambda_handler(event, context):
     """
     crud lambda application...
     """
+    path = event["path"]
+
+    if path == "/get_by_status" or path == "/get_by_owner":
+        return filters.lambda_handler(event, context)
+
+
     mongoengine.connect(
         host=config("MONGO_URL"),
     )
@@ -19,9 +27,9 @@ def lambda_handler(event, context):
     status = {"get": 200, "post": 200, "put": 200, "delete": 404}
     method = event["httpMethod"]
 
-    f = json.loads(event["body"])
+    body = event["body"]
+    f = json.loads(body) if body else {}
     querystring_parameters = event["multiValueQueryStringParameters"]
-
 
     if method == "POST":
         deadline = [int(i) for i in f["deadline"].split("-")]
