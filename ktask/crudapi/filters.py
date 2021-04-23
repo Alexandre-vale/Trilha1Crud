@@ -3,7 +3,7 @@ import json
 import mongoengine
 
 
-from .models import ToDo
+from models import ToDo
 
 
 def lambda_handler(event, context):

@@ -49,6 +49,13 @@ Resources:
           Properties:
             Path: /todo
             Method: delete
+
+        # Create todo TodoList
+        GetTodoList:
+          Type: Api
+          Properties:
+            Path: /todolist
+            Method: get
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./crudapi

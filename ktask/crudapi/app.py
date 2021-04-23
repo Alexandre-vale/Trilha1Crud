@@ -7,6 +7,7 @@ from datetime import datetime, date
 
 from models import ToDo
 import filters
+import app_todolist
 
 
 def lambda_handler(event, context):
@@ -18,7 +19,9 @@ def lambda_handler(event, context):
     if path == "/get_by_status" or path == "/get_by_owner":
         return filters.lambda_handler(event, context)
 
-
+    if path == "/todolist":
+        return app_todolist.lambda_handler(event, context)
+ 
     mongoengine.connect(
         host=config("MONGO_URL"),
     )
