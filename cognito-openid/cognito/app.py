@@ -1,4 +1,5 @@
 import json
+import jwt
 import requests
 
 
@@ -14,7 +15,7 @@ def lambda_handler(event, context):
             "grant_type": "authorization_code",
             "client_id": "vjmavfrop927pfnk9jn15h2ft",
             "code": code,
-            "redirect_uri": "http://localhost:3000/cognito/",
+            "redirect_uri": "http://localhost:3000/cognito",
         },
     )
 
@@ -23,6 +24,5 @@ def lambda_handler(event, context):
     user = jwt.decode(
         idtoken, secret, algorithms=["RS256"], options={"verify_signature": False}
     )
-    return user
 
-    return {"statusCode": 200, "body": user}
+    return {"statusCode": 200, "body": json.dumps(user)}
