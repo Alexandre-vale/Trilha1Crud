@@ -9,7 +9,6 @@ from models import ToDo
 import filters
 
 
-
 def lambda_handler(event, context):
     """
     crud lambda application...
