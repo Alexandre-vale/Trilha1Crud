@@ -1,13 +1,12 @@
-from decouple import config
 import json
+from datetime import date, datetime
+
 import mongoengine
-
 from bson import ObjectId
-from datetime import datetime, date
+from decouple import config
 
-from models import ToDo
-import filters
-import app_todolist
+import app_todolist, filters
+from models import ToDo, ToDoList
 
 
 def lambda_handler(event, context):
@@ -41,21 +40,30 @@ def lambda_handler(event, context):
             name=f["name"],
             body=f["body"],
             owner=f["owner"],
-            contribuitors=f["contribuitors"],
+            todolist=f["todolist"],
+            assigment=f["assigment"],
             created_at=datetime.now(),
-            last_update=datetime.now(),
+            last_update={"user": f["owner"], "date": datetime.now()},
             deadline=date(year=deadline[0], month=deadline[1], day=deadline[2]),
             notification=date(
                 year=notification[0], month=notification[1], day=notification[2]
             ),
-            status=False,
+            attachments=f["attachments"],
+            status=f["status"],
         ).save()
         message = [ToDo.objects(name=f["name"]).first().serialize()]
 
     elif method == "PUT":
         _id = ObjectId(querystring_parameters["id"][0])
-        ToDo.objects(id=_id).update(**f)
-        message = [ToDo.objects(id=_id).first().serialize()]
+        obj = ToDo.objects(id=_id).first()
+        d = obj.last_update
+        d["user"] = f["user"]
+        d["date"] = datetime.now()
+        f.pop("user")
+        obj.update(**f, last_update=d)
+        d["todo"] = str(obj.pk)
+        ToDoList.objects(id=ObjectId(obj.todolist)).update(last_update=d)
+        message = obj.serialize()
 
     elif method == "DELETE":
         _id = ObjectId(querystring_parameters["id"][0])
@@ -63,11 +71,11 @@ def lambda_handler(event, context):
         message = "Object deleted sucessfully"
 
     else:
-        message = ([i.serialize() for i in ToDo.objects.all()],)
+        message = [i.serialize() for i in ToDo.objects.all()]
 
     return {
         "statusCode": status[method.lower()],
         "body": json.dumps(
-            {"Todo": message},
+             message
         ),
     }

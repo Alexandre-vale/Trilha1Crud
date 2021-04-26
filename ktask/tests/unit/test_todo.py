@@ -71,22 +71,24 @@ def apigw_post_event():
     data[
         "body"
     ] = """{
-        "name": "Example",
-        "body": "testetetetetete",
+        "name": "teste todo",
+        "body": "teste body",
         "owner": "teste@teste.com",
-        "contribuitors": {
-        },
+        "todolist": "6086c4662d7de51e39c60293",
+        "assigment": "teste@teste.com",
         "deadline": "2021-06-15",
-        "notification": "2021-05-26"
+        "notification": "2021-05-26",
+        "attachments": {"files": []},
+        "status": "todo"
     }"""
 
     return data
 
 
 @pytest.fixture()
-def apigw_put_event(apigw_post_event):
-    ret = app.lambda_handler(apigw_post_event, "")
-    id = json.loads(ret["body"])["Todo"][0]["id"]
+def apigw_put_event(apigw_event):
+    ret = app.lambda_handler(apigw_event, "")
+    id = json.loads(ret["body"])[-1]["id"]
     data = SAMPLE_EVENT
     data["httpMethod"] = "PUT"
     data["multiValueQueryStringParameters"] = {
@@ -94,18 +96,22 @@ def apigw_put_event(apigw_post_event):
             id,
         ]
     }
-    data["body"] = json.dumps({"name": "Testezin", "status": True})
+    data[
+        "body"
+    ] = """
+        {"name": "Testezin", "status": "done", "user": "boladefogo@teste.com"}
+    """
 
     return data
 
 
 @pytest.fixture()
-def apigw_get_by_status_event(apigw_put_event):
-    data = apigw_put_event
+def apigw_get_by_status_event(apigw_event):
+    data = apigw_event
     data["path"] = "/get_by_status"
     data["multiValueQueryStringParameters"] = {
         "status": [
-            "true",
+            "done",
         ]
     }
 
@@ -113,8 +119,8 @@ def apigw_get_by_status_event(apigw_put_event):
 
 
 @pytest.fixture()
-def apigw_get_by_owner_event(apigw_put_event):
-    data = apigw_put_event
+def apigw_get_by_owner_event(apigw_event):
+    data = apigw_event
     data["path"] = "/get_by_owner"
     data["multiValueQueryStringParameters"] = {
         "owner": [
@@ -128,7 +134,7 @@ def apigw_get_by_owner_event(apigw_put_event):
 @pytest.fixture()
 def apigw_delete_event(apigw_event):
     ret = app.lambda_handler(apigw_event, "")
-    id = json.loads(ret["body"])["Todo"][0]["id"]
+    id = json.loads(ret["body"])[-1]["id"]
     data = SAMPLE_EVENT
     data["httpMethod"] = "DELETE"
     data["multiValueQueryStringParameters"] = {"id": [id]}
@@ -142,8 +148,6 @@ def test_get_all_todos(apigw_event):
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
-    assert "Todo" in ret["body"]
-    assert type(data["Todo"]) == list
 
 
 def test_create_todo(apigw_post_event):
@@ -151,8 +155,6 @@ def test_create_todo(apigw_post_event):
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
-    assert "Todo" in ret["body"]
-    assert len(list(data["Todo"])) > 0
 
 
 def test_update_todo(apigw_put_event):
@@ -160,21 +162,20 @@ def test_update_todo(apigw_put_event):
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
-    assert data["Todo"][0]["name"] == "Testezin"
 
 
 def test_filter_by_status(apigw_get_by_status_event):
     ret = app.lambda_handler(apigw_get_by_status_event, "")
     data = json.loads(ret["body"])
-
-    assert data["Todo"][0]["status"] == True
+    print(data)
+    assert data[0]["status"] == "done"
 
 
 def test_filter_by_owner(apigw_get_by_owner_event):
     ret = app.lambda_handler(apigw_get_by_owner_event, "")
     data = json.loads(ret["body"])
 
-    assert data["Todo"][0]["owner"] == "teste@teste.com"
+    assert data[0]["owner"] == "teste@teste.com"
 
 
 def test_delete_todo(apigw_delete_event):

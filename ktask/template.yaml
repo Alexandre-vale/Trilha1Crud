@@ -50,12 +50,26 @@ Resources:
             Path: /todo
             Method: delete
 
-        # Create todo TodoList
         GetTodoList:
           Type: Api
           Properties:
             Path: /todolist
             Method: get
+        CreateTodoList:
+          Type: Api
+          Properties:
+            Path: /todolist
+            Method: post
+        UpdateTodoList:
+          Type: Api
+          Properties:
+            Path: /todolist
+            Method: put
+        DeleteTodoList:
+          Type: Api
+          Properties:
+            Path: /todolist
+            Method: delete
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./crudapi

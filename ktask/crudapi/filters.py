@@ -1,7 +1,7 @@
-from decouple import config
 import json
-import mongoengine
 
+import mongoengine
+from decouple import config
 
 from models import ToDo
 
@@ -26,13 +26,13 @@ def lambda_handler(event, context):
     if filters[path] == "owner":
         queryset = ToDo.objects(owner=query_filter).all()
     else:
-        status = query_filter.lower() == "true"
+        status = query_filter.lower()
         queryset = ToDo.objects(status=status).all()
     queryset = [todo.serialize() for todo in queryset]
 
     return {
         "statusCode": 200,
         "body": json.dumps(
-            {"Todo": queryset},
+             queryset,
         ),
     }
