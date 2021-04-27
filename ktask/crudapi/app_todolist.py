@@ -38,7 +38,7 @@ def lambda_handler(event, context):
         deadline = [int(i) for i in body["deadline"].split("-")]
         notification = [int(i) for i in body["notification"].split("-")]
 
-        ToDoList.objects.create(
+        todo = ToDoList.objects.create(
             name=body["name"],
             description=body["description"],
             owner=body["owner"],
@@ -56,23 +56,18 @@ def lambda_handler(event, context):
         return {
             "statusCode": 200,
             "body": json.dumps(
-                {
-                    "message": "created"
-                }
+                todo.serialize()
             )
         }
 
     if method == "PUT":
         id = ObjectId(params["id"][0])
-        ToDoList.objects(id=id).update(**body)
+        obj = ToDoList.objects(id=id).first()
+        obj.update(**body)
 
         return {
             "statusCode": 200,
-            "body": json.dumps(
-                {
-                    "message": "updated"
-                }
-            )
+            "body":  json.dumps(obj.serialize())
         }
 
     if method == "DELETE":

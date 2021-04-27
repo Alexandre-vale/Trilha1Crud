@@ -75,24 +75,37 @@ def test_create_todo_list(apigw_post_event):
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
-    assert data["message"] == "created"
+    assert data["name"].strip() == "Teste 1"
 
 
 def test_get_all_todo_lists(apigw_event):
 
     res = lambda_handler(apigw_event, "")
+    data = json.loads(res["body"])
+    first = data[0]
+    name = first["name"].strip()
+    owner = first["owner"]
 
     assert res["statusCode"] == 200
+    assert name == "Teste 1"
+    assert owner == "teste@teste.com"
 
 
-def test_get_one_todo_list(apigw_event):
-    res = lambda_handler(apigw_event, "")
+def test_get_one_todo_list(apigw_put_event):
+    apigw_put_event["httpMethod"] = "GET"
+    res = lambda_handler(apigw_put_event, "")
+    first = json.loads(res["body"])
 
     assert res["statusCode"] == 200
+    assert first["name"].strip() == "Teste 1"
 
 
 def test_update_todo_list(apigw_put_event):
-    pass
+    res = lambda_handler(apigw_put_event, "")
+    data = json.loads(res["body"])
+
+    assert res["statusCode"] == 200
+    # assert data["description"].strip() == "Teste 1 unit updated"
 
 
 def test_delete_todo_list(apigw_delete_event):

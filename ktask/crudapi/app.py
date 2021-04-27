@@ -60,7 +60,8 @@ def lambda_handler(event, context):
         d["user"] = f["user"]
         d["date"] = datetime.now()
         f.pop("user")
-        obj.update(**f, last_update=d)
+        f["last_update"] = d
+        obj.update(**f)
         d["todo"] = str(obj.pk)
         ToDoList.objects(id=ObjectId(obj.todolist)).update(last_update=d)
         message = obj.serialize()

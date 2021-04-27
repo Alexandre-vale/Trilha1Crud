@@ -143,11 +143,6 @@ def apigw_delete_event(apigw_event):
     return data
 
 
-def test_get_all_todos(apigw_event):
-    ret = app.lambda_handler(apigw_event, "")
-    data = json.loads(ret["body"])
-
-    assert ret["statusCode"] == 200
 
 
 def test_create_todo(apigw_post_event):
@@ -155,6 +150,16 @@ def test_create_todo(apigw_post_event):
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
+    assert data[0]["name"].strip() == "teste todo"
+
+
+def test_get_all_todos(apigw_event):
+    ret = app.lambda_handler(apigw_event, "")
+    data = json.loads(ret["body"])
+
+    assert ret["statusCode"] == 200
+    assert data[0]["name"].strip() == "teste todo"
+    assert data[0]["body"].strip() == "teste body"
 
 
 def test_update_todo(apigw_put_event):
@@ -162,12 +167,14 @@ def test_update_todo(apigw_put_event):
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
+    assert data["name"].strip() == "teste todo"
 
 
 def test_filter_by_status(apigw_get_by_status_event):
     ret = app.lambda_handler(apigw_get_by_status_event, "")
     data = json.loads(ret["body"])
-    print(data)
+
+    assert ret["statusCode"] == 200
     assert data[0]["status"] == "done"
 
 
@@ -175,6 +182,7 @@ def test_filter_by_owner(apigw_get_by_owner_event):
     ret = app.lambda_handler(apigw_get_by_owner_event, "")
     data = json.loads(ret["body"])
 
+    assert ret["statusCode"] == 200
     assert data[0]["owner"] == "teste@teste.com"
 
 
@@ -183,3 +191,4 @@ def test_delete_todo(apigw_delete_event):
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 404
+    assert data == "Object deleted sucessfully"
