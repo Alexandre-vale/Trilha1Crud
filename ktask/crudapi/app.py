@@ -18,6 +18,12 @@ def lambda_handler(event, context):
 
     conn = mongoengine.connect(db=db, host=host)
 
+    headers = {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
+    }
+
     path = event["path"]
     filter_paths = [
         "/get_by_status",
@@ -26,10 +32,14 @@ def lambda_handler(event, context):
     ]
 
     if path in filter_paths:
-        return filters.lambda_handler(event, context)
+        res =  filters.lambda_handler(event, context)
+        res["headers"] = headers
+        return res
 
     if path == "/todolist":
-        return app_todolist.lambda_handler(event, context)
+        res = app_todolist.lambda_handler(event, context)
+        res["headers"] = headers
+        return res
 
     status = {"get": 200, "post": 200, "put": 200, "delete": 404}
     method = event["httpMethod"]
@@ -81,6 +91,7 @@ def lambda_handler(event, context):
         message = [i.serialize() for i in ToDo.objects.all()]
 
     return {
+        "headers": headers,
         "statusCode": status[method.lower()],
         "body": json.dumps(
             message
