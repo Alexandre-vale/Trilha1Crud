@@ -11,10 +11,6 @@ def lambda_handler(event, context):
     """
     crud lambda application...
     """
-    mongoengine.connect(
-        host=config("MONGO_URL"),
-    )
-
     filters = {
         "/get_by_list": "todolist",
         "/get_by_owner": "owner",

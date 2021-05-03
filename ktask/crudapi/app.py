@@ -1,6 +1,5 @@
 import json
 from datetime import date, datetime
-from dbm.ndbm import _dbm
 
 import mongoengine
 from bson import ObjectId
@@ -14,6 +13,11 @@ def lambda_handler(event, context):
     """
     crud lambda application...
     """
+    db = config("MONGO_DB")
+    host = config("MONGO_HOST")
+
+    conn = mongoengine.connect(db=db, host=host)
+
     path = event["path"]
     filter_paths = [
         "/get_by_status",
@@ -26,10 +30,6 @@ def lambda_handler(event, context):
 
     if path == "/todolist":
         return app_todolist.lambda_handler(event, context)
- 
-    mongoengine.connect(
-        host=config("MONGO_URL"), _db=config("MONGO_DB")
-    )
 
     status = {"get": 200, "post": 200, "put": 200, "delete": 404}
     method = event["httpMethod"]
@@ -83,6 +83,6 @@ def lambda_handler(event, context):
     return {
         "statusCode": status[method.lower()],
         "body": json.dumps(
-             message
+            message
         ),
     }

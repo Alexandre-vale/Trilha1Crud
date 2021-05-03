@@ -9,9 +9,6 @@ from models import ToDoList
 
 
 def lambda_handler(event, context):
-    mongoengine.connect(
-        host=config("MONGO_URL"),
-    )
     method = event["httpMethod"]
     params = {}
 
