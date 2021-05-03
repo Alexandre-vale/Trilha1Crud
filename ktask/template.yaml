@@ -5,7 +5,7 @@ Description: >
 
   Sample SAM Template for ktask
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+
 Globals:
   Function:
     Timeout: 60
@@ -32,6 +32,12 @@ Resources:
           Type: Api
           Properties:
             Path: /get_by_owner
+            Method: get
+
+        ReadByTodoList:
+          Type: Api
+          Properties:
+            Path: /get_by_list
             Method: get
 
         Create:

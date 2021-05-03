@@ -1,6 +1,6 @@
 from behave import when, then
 
-from ktask.tests.unit.test_handler import SAMPLE_EVENT
+from ktask.tests.unit.test_todo import SAMPLE_EVENT
 
 
 @when("The '{method}' event was triggered")

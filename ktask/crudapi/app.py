@@ -5,8 +5,8 @@ import mongoengine
 from bson import ObjectId
 from decouple import config
 
-import app_todolist, filters
-from models import ToDo, ToDoList
+from . import app_todolist, filters
+from .models import ToDo, ToDoList
 
 
 def lambda_handler(event, context):
@@ -14,8 +14,13 @@ def lambda_handler(event, context):
     crud lambda application...
     """
     path = event["path"]
+    filter_paths = [
+        "/get_by_status",
+        "/get_by_owner",
+        "/get_by_list"
+    ]
 
-    if path == "/get_by_status" or path == "/get_by_owner":
+    if path in filter_paths:
         return filters.lambda_handler(event, context)
 
     if path == "/todolist":

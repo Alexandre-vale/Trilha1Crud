@@ -5,7 +5,7 @@ import mongoengine
 from bson import ObjectId
 from decouple import config
 
-from models import ToDoList
+from .models import ToDoList
 
 
 def lambda_handler(event, context):
