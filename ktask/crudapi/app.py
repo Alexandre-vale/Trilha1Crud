@@ -1,12 +1,13 @@
 import json
 from datetime import date, datetime
+from dbm.ndbm import _dbm
 
 import mongoengine
 from bson import ObjectId
 from decouple import config
 
-from . import app_todolist, filters
-from .models import ToDo, ToDoList
+import app_todolist, filters
+from models import ToDo, ToDoList
 
 
 def lambda_handler(event, context):
@@ -27,7 +28,7 @@ def lambda_handler(event, context):
         return app_todolist.lambda_handler(event, context)
  
     mongoengine.connect(
-        host=config("MONGO_URL"),
+        host=config("MONGO_URL"), _db=config("MONGO_DB")
     )
 
     status = {"get": 200, "post": 200, "put": 200, "delete": 404}
