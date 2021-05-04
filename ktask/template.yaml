@@ -81,6 +81,21 @@ Resources:
       DockerContext: ./crudapi
       DockerTag: todocrud
 
+  FileUploadPreSigned:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Events:
+        GetUrl:
+          Type: Api
+          Properties:
+            Path: /get_upload_url
+            Method: get
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./upload
+      Dockertag: fileupload
+
 #  user:
 #    Type: AWS::Serverless::Function
 #    Properties:
