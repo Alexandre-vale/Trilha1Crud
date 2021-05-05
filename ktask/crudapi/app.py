@@ -5,7 +5,8 @@ import mongoengine
 from bson import ObjectId
 from decouple import config
 
-import app_todolist, filters
+import app_todolist
+import filters
 from models import ToDo, ToDoList
 
 
@@ -19,9 +20,9 @@ def lambda_handler(event, context):
     conn = mongoengine.connect(db=db, host=host)
 
     headers = {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE',
     }
 
     path = event["path"]
@@ -32,7 +33,7 @@ def lambda_handler(event, context):
     ]
 
     if path in filter_paths:
-        res =  filters.lambda_handler(event, context)
+        res = filters.lambda_handler(event, context)
         res["headers"] = headers
         return res
 
@@ -60,7 +61,8 @@ def lambda_handler(event, context):
             assigment=f["assigment"],
             created_at=datetime.now(),
             last_update={"user": f["owner"], "date": datetime.now()},
-            deadline=date(year=deadline[0], month=deadline[1], day=deadline[2]),
+            deadline=date(year=deadline[0],
+                          month=deadline[1], day=deadline[2]),
             notification=date(
                 year=notification[0], month=notification[1], day=notification[2]
             ),

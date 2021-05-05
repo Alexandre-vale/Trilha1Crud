@@ -6,12 +6,21 @@ import json
 
 
 def lambda_handler(event, context):
+    method = event["httpMethod"]
     headers = {
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE, OPTIONS",
-        "Access-Control-Max-Age": 86400
+        'Content-Type': "application/json",
+        'Access-Allow-Credentials': "false",
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST,GET,PUT,DELETE',
+        'Access-Control-Max-Age': "86400"
     }
+
+    if method == "OPTIONS":
+        return {
+            "statusCode": 204,
+            "headers": headers
+        }
 
     key = event["queryStringParameters"]["key"]
 
@@ -28,4 +37,4 @@ def lambda_handler(event, context):
         HttpMethod="PUT",
     )
 
-    return {"headers": headers, "statusCode": 200, "body": json.dumps(url)}
+    return {"headers": headers, "statusCode": 200, "body": json.dumps([{"url": url}])}
