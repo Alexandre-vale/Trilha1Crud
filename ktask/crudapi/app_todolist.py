@@ -22,18 +22,18 @@ def lambda_handler(event, context):
 
     if method == "GET":
         if "id" in params.keys():
-            queryset = ToDoList.objects(id=ObjectId(
-                params["id"][0])).first().serialize()
+            queryset = (
+                ToDoList.objects(id=ObjectId(params["id"][0])).first().serialize()
+            )
         else:
-            queryset = [todolist.serialize()
-                        for todolist in ToDoList.objects.all()]
+            queryset = [todolist.serialize() for todolist in ToDoList.objects.all()]
 
         return {
             "statusCode": 200,
             "body": json.dumps(queryset),
         }
 
-    if method == "POST":
+    if method == "POST" or method == "OPTIONS":
         deadline = [int(i) for i in body["deadline"].split("-")]
         notification = [int(i) for i in body["notification"].split("-")]
 
@@ -42,23 +42,19 @@ def lambda_handler(event, context):
             description=body["description"],
             owner=body["owner"],
             access=body["access"],
-            todos=body["todos"],
+            todos={"todo": []},
             created_at=datetime.now(),
-            last_update={"user": body["owner"],
-                         "date": datetime.now(), "todo": None},
-            deadline=date(year=deadline[0],
-                          month=deadline[1], day=deadline[2]),
+            last_update={"user": body["owner"], "date": datetime.now(), "todo": None},
+            deadline=date(year=deadline[0], month=deadline[1], day=deadline[2]),
             notification=date(
                 year=notification[0], month=notification[1], day=notification[2]
             ),
-            status=body["status"],
+            status=None,
         ).save()
 
         return {
             "statusCode": 200,
-            "body": json.dumps(
-                todo.serialize()
-            )
+            "body": json.dumps(todo.serialize()),
         }
 
     if method == "PUT":
@@ -66,13 +62,10 @@ def lambda_handler(event, context):
         obj = ToDoList.objects(id=id).first()
         obj.update(**body)
 
-        return {
-            "statusCode": 200,
-            "body":  json.dumps(obj.serialize())
-        }
+        return {"statusCode": 200, "body": json.dumps(obj.serialize())}
 
     if method == "DELETE":
         id = ObjectId(params["id"][0])
         ToDoList.objects(id=id).delete()
 
-    return {"statusCode": 404}
+        return {"statusCode": 404}

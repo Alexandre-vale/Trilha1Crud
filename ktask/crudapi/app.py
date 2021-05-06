@@ -14,23 +14,30 @@ def lambda_handler(event, context):
     """
     crud lambda application...
     """
+
     db = config("MONGO_DB")
     host = config("MONGO_HOST")
-
     conn = mongoengine.connect(db=db, host=host)
 
     headers = {
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE',
+        "Content-Type": "application/json",
+        "Access-Allow-Credentials": "false",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST,GET,PUT,DELETE",
+        "Access-Control-Max-Age": "86400",
     }
 
+    method = event["httpMethod"]
     path = event["path"]
-    filter_paths = [
-        "/get_by_status",
-        "/get_by_owner",
-        "/get_by_list"
-    ]
+    filter_paths = ["/get_by_status", "/get_by_owner", "/get_by_list"]
+    status = {"get": 200, "post": 200, "put": 200, "options": 200, "delete": 404}
+    body = event["body"]
+    f = json.loads(body) if body else {}
+    querystring_parameters = event["multiValueQueryStringParameters"]
+
+    if method == "OPTIONS":
+        return {"statusCode": 204, "headers": headers}
 
     if path in filter_paths:
         res = filters.lambda_handler(event, context)
@@ -41,13 +48,6 @@ def lambda_handler(event, context):
         res = app_todolist.lambda_handler(event, context)
         res["headers"] = headers
         return res
-
-    status = {"get": 200, "post": 200, "put": 200, "delete": 404}
-    method = event["httpMethod"]
-
-    body = event["body"]
-    f = json.loads(body) if body else {}
-    querystring_parameters = event["multiValueQueryStringParameters"]
 
     if method == "POST":
         deadline = [int(i) for i in f["deadline"].split("-")]
@@ -61,13 +61,12 @@ def lambda_handler(event, context):
             assigment=f["assigment"],
             created_at=datetime.now(),
             last_update={"user": f["owner"], "date": datetime.now()},
-            deadline=date(year=deadline[0],
-                          month=deadline[1], day=deadline[2]),
+            deadline=date(year=deadline[0], month=deadline[1], day=deadline[2]),
             notification=date(
                 year=notification[0], month=notification[1], day=notification[2]
             ),
             attachments=f["attachments"],
-            status=f["status"],
+            status=None,
         ).save()
         message = [ToDo.objects(name=f["name"]).first().serialize()]
 
@@ -95,7 +94,5 @@ def lambda_handler(event, context):
     return {
         "headers": headers,
         "statusCode": status[method.lower()],
-        "body": json.dumps(
-            message
-        ),
+        "body": json.dumps(message),
     }

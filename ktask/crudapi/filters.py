@@ -15,7 +15,7 @@ def lambda_handler(event, context):
         "/get_by_list": "todolist",
         "/get_by_owner": "owner",
         "/get_by_status": "status",
-        "/get_from_user": "contribuitor"
+        "/get_from_user": "contribuitor",
     }
 
     path = event["path"]
@@ -32,7 +32,9 @@ def lambda_handler(event, context):
 
         contrib = list(
             filter(
-                lambda x: query_filter in x.acces["contributors"] or query_filter in x.acess["readers"], tmp
+                lambda x: query_filter in x.acces["contributors"]
+                or query_filter in x.acess["readers"],
+                tmp,
             )
         )
 
@@ -46,6 +48,6 @@ def lambda_handler(event, context):
     return {
         "statusCode": 200,
         "body": json.dumps(
-             queryset,
+            queryset,
         ),
     }
