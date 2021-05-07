@@ -191,4 +191,4 @@ def test_delete_todo(apigw_delete_event):
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 404
-    assert data == "Object deleted sucessfully"
+    assert data == "Object deleted successfully"

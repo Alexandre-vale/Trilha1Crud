@@ -1,9 +1,5 @@
 import json
 
-import mongoengine
-from bson import ObjectId
-from decouple import config
-
 from models import ToDo, ToDoList
 
 
@@ -11,6 +7,15 @@ def lambda_handler(event, context):
     """
     crud lambda application...
     """
+    headers = {
+        "Content-Type": "application/json",
+        "Access-Allow-Credentials": "false",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST,GET,PUT,DELETE,OPTIONS",
+        "Access-Control-Max-Age": "86400",
+    }
+
     filters = {
         "/get_by_list": "todolist",
         "/get_by_owner": "owner",
@@ -47,6 +52,7 @@ def lambda_handler(event, context):
 
     return {
         "statusCode": 200,
+        "headers": headers,
         "body": json.dumps(
             queryset,
         ),

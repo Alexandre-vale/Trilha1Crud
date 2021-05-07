@@ -1,14 +1,22 @@
 import json
 from datetime import date, datetime
 
-import mongoengine
 from bson import ObjectId
-from decouple import config
 
 from models import ToDoList
 
 
 def lambda_handler(event, context):
+
+    headers = {
+        "Content-Type": "application/json",
+        "Access-Allow-Credentials": "false",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST,GET,PUT,DELETE,OPTIONS",
+        "Access-Control-Max-Age": "86400",
+    }
+
     method = event["httpMethod"]
     params = {}
 
@@ -17,13 +25,13 @@ def lambda_handler(event, context):
     except TypeError:
         body = {}
 
-    if event["multiValueQueryStringParameters"]:
-        params = event["multiValueQueryStringParameters"]
+    if event["queryStringParameters"]:
+        params = event["queryStringParameters"]
 
     if method == "GET":
         if "id" in params.keys():
             queryset = (
-                ToDoList.objects(id=ObjectId(params["id"][0])).first().serialize()
+                ToDoList.objects(id=ObjectId(params["id"])).first().serialize()
             )
         else:
             queryset = [todolist.serialize() for todolist in ToDoList.objects.all()]
@@ -31,9 +39,10 @@ def lambda_handler(event, context):
         return {
             "statusCode": 200,
             "body": json.dumps(queryset),
+            "headers": headers
         }
 
-    if method == "POST" or method == "OPTIONS":
+    if method == "POST":
         deadline = [int(i) for i in body["deadline"].split("-")]
         notification = [int(i) for i in body["notification"].split("-")]
 
@@ -55,17 +64,19 @@ def lambda_handler(event, context):
         return {
             "statusCode": 200,
             "body": json.dumps(todo.serialize()),
+            "headers": headers
         }
 
     if method == "PUT":
-        id = ObjectId(params["id"][0])
+        id = ObjectId(params["id"])
         obj = ToDoList.objects(id=id).first()
         obj.update(**body)
+        obj = ToDoList.objects(id=id).first()
 
-        return {"statusCode": 200, "body": json.dumps(obj.serialize())}
+        return {"statusCode": 200, "body": json.dumps(obj.serialize()), "headers": headers}
 
     if method == "DELETE":
-        id = ObjectId(params["id"][0])
+        id = ObjectId(params["id"])
         ToDoList.objects(id=id).delete()
 
-        return {"statusCode": 404}
+        return {"statusCode": 200, "headers": headers}
