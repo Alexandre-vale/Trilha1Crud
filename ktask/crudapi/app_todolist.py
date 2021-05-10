@@ -2,7 +2,6 @@ import json
 from datetime import date, datetime
 
 from bson import ObjectId
-
 from models import ToDoList
 
 
@@ -30,17 +29,11 @@ def lambda_handler(event, context):
 
     if method == "GET":
         if "id" in params.keys():
-            queryset = (
-                ToDoList.objects(id=ObjectId(params["id"])).first().serialize()
-            )
+            queryset = ToDoList.objects(id=ObjectId(params["id"])).first().serialize()
         else:
             queryset = [todolist.serialize() for todolist in ToDoList.objects.all()]
 
-        return {
-            "statusCode": 200,
-            "body": json.dumps(queryset),
-            "headers": headers
-        }
+        return {"statusCode": 200, "body": json.dumps(queryset), "headers": headers}
 
     if method == "POST":
         deadline = [int(i) for i in body["deadline"].split("-")]
@@ -64,7 +57,7 @@ def lambda_handler(event, context):
         return {
             "statusCode": 200,
             "body": json.dumps(todo.serialize()),
-            "headers": headers
+            "headers": headers,
         }
 
     if method == "PUT":
@@ -73,7 +66,11 @@ def lambda_handler(event, context):
         obj.update(**body)
         obj = ToDoList.objects(id=id).first()
 
-        return {"statusCode": 200, "body": json.dumps(obj.serialize()), "headers": headers}
+        return {
+            "statusCode": 200,
+            "body": json.dumps(obj.serialize()),
+            "headers": headers,
+        }
 
     if method == "DELETE":
         id = ObjectId(params["id"])

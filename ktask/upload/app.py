@@ -1,8 +1,8 @@
+import json
+
 import boto3
 from botocore.config import Config
 from decouple import config
-
-import json
 
 
 def lambda_handler(event, context):

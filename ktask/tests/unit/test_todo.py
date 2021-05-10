@@ -29,7 +29,7 @@ SAMPLE_EVENT = {
         },
         "stage": "prod",
     },
-    "multiValueQueryStringParameters": None,
+    "queryStringParameters": None,
     "headers": {
         "Via": "1.1 08f323deadbeefa7af34d5feb414ce27.cloudfront.net (CloudFront)",
         "Accept-Language": "en-US,en;q=0.8",
@@ -91,15 +91,13 @@ def apigw_put_event(apigw_event):
     id = json.loads(ret["body"])[-1]["id"]
     data = SAMPLE_EVENT
     data["httpMethod"] = "PUT"
-    data["multiValueQueryStringParameters"] = {
-        "id": [
-            id,
-        ]
+    data["queryStringParameters"] = {
+        "id": id,
     }
     data[
         "body"
     ] = """
-        {"name": "Testezin", "status": "done", "user": "boladefogo@teste.com"}
+        {"name": "Testezin", "status": "done"}
     """
 
     return data
@@ -109,10 +107,8 @@ def apigw_put_event(apigw_event):
 def apigw_get_by_status_event(apigw_event):
     data = apigw_event
     data["path"] = "/get_by_status"
-    data["multiValueQueryStringParameters"] = {
-        "status": [
-            "done",
-        ]
+    data["queryStringParameters"] = {
+        "status": "done",
     }
 
     return data
@@ -122,10 +118,8 @@ def apigw_get_by_status_event(apigw_event):
 def apigw_get_by_owner_event(apigw_event):
     data = apigw_event
     data["path"] = "/get_by_owner"
-    data["multiValueQueryStringParameters"] = {
-        "owner": [
-            "teste@teste.com",
-        ]
+    data["queryStringParameters"] = {
+        "owner": "teste@teste.com",
     }
 
     return data
@@ -137,12 +131,10 @@ def apigw_delete_event(apigw_event):
     id = json.loads(ret["body"])[-1]["id"]
     data = SAMPLE_EVENT
     data["httpMethod"] = "DELETE"
-    data["multiValueQueryStringParameters"] = {"id": [id]}
+    data["queryStringParameters"] = {"id": id}
     data["path"] = "/todo"
 
     return data
-
-
 
 
 def test_create_todo(apigw_post_event):
@@ -167,7 +159,7 @@ def test_update_todo(apigw_put_event):
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
-    assert data["name"].strip() == "teste todo"
+    assert data["name"].strip() == "Testezin"
 
 
 def test_filter_by_status(apigw_get_by_status_event):
@@ -190,5 +182,5 @@ def test_delete_todo(apigw_delete_event):
     ret = app.lambda_handler(apigw_delete_event, "")
     data = json.loads(ret["body"])
 
-    assert ret["statusCode"] == 404
+    assert ret["statusCode"] == 200
     assert data == "Object deleted successfully"

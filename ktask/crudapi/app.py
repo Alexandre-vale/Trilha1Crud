@@ -1,15 +1,13 @@
 import json
 from datetime import date, datetime
 
-import mongoengine
-from mongoengine.errors import ValidationError
-from bson import ObjectId
-from decouple import config
-import logging
-
 import app_todolist
 import filters
+import mongoengine
+from bson import ObjectId
+from decouple import config
 from models import ToDo, ToDoList
+from mongoengine.errors import ValidationError
 
 
 def lambda_handler(event, context):
@@ -72,7 +70,7 @@ def lambda_handler(event, context):
             return {
                 "statusCode": 500,
                 "headers": headers,
-                "body": json.dumps("Invalid request body")
+                "body": json.dumps("Invalid request body"),
             }
 
     elif method == "PUT":
@@ -90,11 +88,7 @@ def lambda_handler(event, context):
             obj = ToDo.objects(id=_id).first()
             message = obj.serialize()
         except (ValidationError, KeyError) as e:
-            return {
-                "statusCode": 500,
-                "headers": headers,
-                "body": json.dumps(e)
-            }
+            return {"statusCode": 500, "headers": headers, "body": json.dumps(e)}
 
     elif method == "DELETE":
         _id = ObjectId(querystring_parameters["id"])

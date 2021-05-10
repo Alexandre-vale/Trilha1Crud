@@ -1,4 +1,5 @@
-from mongoengine import Document, StringField, DateField, DictField, BooleanField
+from mongoengine import (BooleanField, DateField, DictField, Document,
+                         StringField)
 
 
 class ToDoList(Document):
@@ -29,7 +30,7 @@ class ToDoList(Document):
             "lastupdate": {
                 "user": self.last_update["user"],
                 "date": str(self.last_update["date"]),
-                "todo": self.last_update["todo"]
+                "todo": self.last_update["todo"],
             },
             "deadline": str(self.deadline),
             "notification": str(self.notification),
@@ -63,7 +64,7 @@ class ToDo(Document):
             "todolist": self.todolist,
             "assigment": self.assigment,
             "created_at": str(self.created_at),
-            "lastupdate":{
+            "lastupdate": {
                 "user": self.last_update["user"],
                 "date": str(self.last_update["date"]),
             },

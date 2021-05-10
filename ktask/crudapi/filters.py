@@ -24,8 +24,8 @@ def lambda_handler(event, context):
     }
 
     path = event["path"]
-    querystring_parameters = event["multiValueQueryStringParameters"]
-    query_filter = querystring_parameters[filters[path]][0]
+    querystring_parameters = event["queryStringParameters"]
+    query_filter = querystring_parameters[filters[path]]
 
     if filters[path] == "todolist":
         queryset = ToDo.objects(todolist=query_filter).all()

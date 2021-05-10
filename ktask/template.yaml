@@ -106,6 +106,22 @@ Resources:
       DockerContext: ./upload
       Dockertag: fileupload
 
+  
+  CognitoOpenID:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Events:
+        GetToken:
+          Type: Api
+          Properties:
+            Path: /auth
+            Method: get
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./cognito
+      Dockertag: auth
+
 #  user:
 #    Type: AWS::Serverless::Function
 #    Properties:

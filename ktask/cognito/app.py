@@ -1,4 +1,5 @@
 import json
+
 import jwt
 import requests
 
@@ -6,7 +7,7 @@ import requests
 def lambda_handler(event, context):
 
     code = event["queryStringParameters"]["code"]
-    
+
     secret = "aaa"
     response = requests.post(
         "https://todoapi.auth.sa-east-1.amazoncognito.com/oauth2/token",

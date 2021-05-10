@@ -10,7 +10,7 @@ def api_event():
     return {
         "path": "/get_upload_url",
         "queryStringParameters": {"key": "abobora"},
-        "httpMethod": "GET"
+        "httpMethod": "GET",
     }
 
 

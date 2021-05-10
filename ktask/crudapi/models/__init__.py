@@ -1,1 +1,1 @@
-from .todo import ToDo, ToDoList # Yeah baby
+from .todo import ToDo, ToDoList
