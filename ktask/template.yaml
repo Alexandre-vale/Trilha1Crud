@@ -1,0 +1,120 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  python3.8
+
+  Sample SAM Template for ktask
+
+
+Globals:
+  Function:
+    Timeout: 60
+
+Resources:
+  crudapi:
+    Type: AWS::Serverless::Function
+    Properties: 
+      PackageType: Image
+      Events:
+        Read:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: get
+
+        ReadByStatus:
+          Type: Api
+          Properties:
+            Path: /get_by_status
+            Method: get
+
+        ReadByOwner:
+          Type: Api
+          Properties:
+            Path: /get_by_owner
+            Method: get
+
+        ReadByTodoList:
+          Type: Api
+          Properties:
+            Path: /get_by_list
+            Method: get
+
+        Create:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: post
+        Update:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: put
+        Delete:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: delete
+        Options:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: options
+
+        GetTodoList:
+          Type: Api
+          Properties:
+            Path: /todolist
+            Method: get
+        CreateTodoList:
+          Type: Api
+          Properties:
+            Path: /todolist
+            Method: post
+        UpdateTodoList:
+          Type: Api
+          Properties:
+            Path: /todolist
+            Method: put
+        DeleteTodoList:
+          Type: Api
+          Properties:
+            Path: /todolist
+            Method: delete
+        OptionsTodoList:
+          Type: Api
+          Properties:
+            Path: /todolist
+            Method: options
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./crudapi
+      DockerTag: todocrud
+
+  FileUploadPreSigned:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Events:
+        GetUrl:
+          Type: Api
+          Properties:
+            Path: /get_upload_url
+            Method: get
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./upload
+      Dockertag: fileupload
+
+#  user:
+#    Type: AWS::Serverless::Function
+#    Properties:
+#      PackageType: Image
+#      Events:
+
+#
+#
+#    Metadata:
+#      Dockerfile: Dockerfile
+#      DockerContext: ./user
+#      DockerTag: user

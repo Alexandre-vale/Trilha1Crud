@@ -1,0 +1,4 @@
+requests
+mongoengine
+python-decouple
+dnspython==2.1.0
