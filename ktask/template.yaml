@@ -101,6 +101,11 @@ Resources:
           Properties:
             Path: /get_upload_url
             Method: get
+        Options:
+          Type: Api
+          Properties:
+            Path: /get_upload_url
+            Method: options
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./upload

@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import app_todolist
 import filters
@@ -48,7 +48,7 @@ def lambda_handler(event, context):
     if method == "POST":
         try:
             deadline = [int(i) for i in f["deadline"].split("-")]
-            notification = [int(i) for i in f["notification"].split("-")]
+            deadline = date(year=deadline[0], month=deadline[1], day=deadline[2])
 
             ToDo.objects.create(
                 name=f["name"],
@@ -58,10 +58,8 @@ def lambda_handler(event, context):
                 assigment=f["assigment"],
                 created_at=datetime.now(),
                 last_update={"user": f["owner"], "date": datetime.now()},
-                deadline=date(year=deadline[0], month=deadline[1], day=deadline[2]),
-                notification=date(
-                    year=notification[0], month=notification[1], day=notification[2]
-                ),
+                deadline=deadline,
+                notification=deadline - timedelta(days=3),
                 attachments=f["attachments"],
                 status=None,
             ).save()
