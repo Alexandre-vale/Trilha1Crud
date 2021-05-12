@@ -36,6 +36,7 @@ def lambda_handler(event, context):
     f = json.loads(body) if body else {}
     querystring_parameters = event["queryStringParameters"]
 
+
     if method == "OPTIONS":
         return {"statusCode": 204, "headers": headers}
 
@@ -44,6 +45,15 @@ def lambda_handler(event, context):
 
     if path == "/todolist":
         return app_todolist.lambda_handler(event, context)
+
+    if method == "GET":
+
+        if "id" in querystring_parameters.keys():
+            message = ToDo.objects(id=ObjectId(querystring_parameters["id"])).first().serialize()
+
+        else:
+            message = [i.serialize() for i in ToDo.objects.all()]
+
 
     if method == "POST":
         try:
@@ -93,8 +103,7 @@ def lambda_handler(event, context):
         ToDo.objects(id=_id).first().delete()
         message = "Object deleted successfully"
 
-    else:
-        message = [i.serialize() for i in ToDo.objects.all()]
+    
 
     return {
         "headers": headers,
