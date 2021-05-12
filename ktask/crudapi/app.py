@@ -34,8 +34,9 @@ def lambda_handler(event, context):
     status = {"get": 200, "post": 200, "put": 200, "delete": 200}
     body = event["body"]
     f = json.loads(body) if body else {}
-    querystring_parameters = event["queryStringParameters"]
-
+    querystring_parameters = (
+        event["queryStringParameters"] if event["queryStringParameters"] else {}
+    )
 
     if method == "OPTIONS":
         return {"statusCode": 204, "headers": headers}
@@ -49,11 +50,14 @@ def lambda_handler(event, context):
     if method == "GET":
 
         if "id" in querystring_parameters.keys():
-            message = ToDo.objects(id=ObjectId(querystring_parameters["id"])).first().serialize()
+            message = (
+                ToDo.objects(id=ObjectId(querystring_parameters["id"]))
+                .first()
+                .serialize()
+            )
 
         else:
             message = [i.serialize() for i in ToDo.objects.all()]
-
 
     if method == "POST":
         try:
@@ -102,8 +106,6 @@ def lambda_handler(event, context):
         _id = ObjectId(querystring_parameters["id"])
         ToDo.objects(id=_id).first().delete()
         message = "Object deleted successfully"
-
-    
 
     return {
         "headers": headers,

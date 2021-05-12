@@ -29,8 +29,10 @@ def lambda_handler(event, context):
 
     if filters[path] == "todolist":
         queryset = ToDo.objects(todolist=query_filter).all()
+
     elif filters[path] == "owner":
         queryset = ToDo.objects(owner=query_filter).all()
+
     elif filters[path] == "contribuitor":
         queryset = ToDoList.objects(owner=query_filter).all()
         tmp = ToDoList.objects.all()
@@ -44,9 +46,21 @@ def lambda_handler(event, context):
         )
 
         queryset = list(queryset) + contrib
+
     else:
         status = query_filter.lower()
-        queryset = ToDo.objects(status=status).all()
+        if "list" in querystring_parameters.keys():
+            list_mode = querystring_parameters["list"] == "True"
+            queryset = (
+                ToDoList.objects(status=status).all()
+                if list_mode
+                else ToDo.objects(status=status).all()
+            )
+        else:
+            queryset = (
+                list(ToDoList.objects(status=status).all())
+                + list(ToDo.objects(status=status).all())
+            )
 
     queryset = [todo.serialize() for todo in queryset]
 
