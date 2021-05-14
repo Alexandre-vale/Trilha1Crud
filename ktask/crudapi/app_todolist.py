@@ -53,12 +53,39 @@ def lambda_handler(event, context):
         ).save()
 
         return {
-            "statusCode": 200,
+            "statusCode": 400,
             "body": json.dumps(todo.serialize()),
             "headers": headers,
         }
 
     if method == "PUT":
+        if "access" in body.keys():
+            for reader in body["access"]["readers"]:
+                if (
+                        body["access"]["readers"].count(reader) > 1
+                        or reader in body["access"]["contributors"]
+                ):
+                    return {
+                        "statusCode": 400,
+                        "headers": headers,
+                        "body": json.dumps(
+                            "Este usuário já está adicionado ao projeto"
+                        ),
+                    }
+
+            for contributor in body["access"]["contributors"]:
+                if (
+                        body["access"]["contributors"].count(contributor) > 1
+                        or contributor in body["access"]["readers"]
+                ):
+                    return {
+                        "statusCode": 200,
+                        "headers": headers,
+                        "body": json.dumps(
+                            "Este usuário já está adicionado ao projeto"
+                        ),
+                    }
+
         id = ObjectId(params["id"])
         obj = ToDoList.objects(id=id).first()
         obj.update(**body)

@@ -46,7 +46,18 @@ def lambda_handler(event, context):
         queryset = list(queryset) + contrib
     else:
         status = query_filter.lower()
-        queryset = ToDo.objects(status=status).all()
+        if "list" in querystring_parameters.keys():
+            list_mode = querystring_parameters["list"] == "True"
+            queryset = (
+                ToDoList.objects(status=status).all()
+                if list_mode
+                else ToDo.objects(status=status).all()
+            )
+        else:
+            queryset = (
+                    list(ToDoList.objects(status=status).all())
+                    + list(ToDo.objects(status=status).all())
+            )
 
     queryset = [todo.serialize() for todo in queryset]
 
