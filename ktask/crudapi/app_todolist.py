@@ -53,7 +53,7 @@ def lambda_handler(event, context):
         ).save()
 
         return {
-            "statusCode": 400,
+            "statusCode": 200,
             "body": json.dumps(todo.serialize()),
             "headers": headers,
         }
@@ -62,8 +62,8 @@ def lambda_handler(event, context):
         if "access" in body.keys():
             for reader in body["access"]["readers"]:
                 if (
-                        body["access"]["readers"].count(reader) > 1
-                        or reader in body["access"]["contributors"]
+                    body["access"]["readers"].count(reader) > 1
+                    or reader in body["access"]["contributors"]
                 ):
                     return {
                         "statusCode": 400,
@@ -75,11 +75,11 @@ def lambda_handler(event, context):
 
             for contributor in body["access"]["contributors"]:
                 if (
-                        body["access"]["contributors"].count(contributor) > 1
-                        or contributor in body["access"]["readers"]
+                    body["access"]["contributors"].count(contributor) > 1
+                    or contributor in body["access"]["readers"]
                 ):
                     return {
-                        "statusCode": 200,
+                        "statusCode": 400,
                         "headers": headers,
                         "body": json.dumps(
                             "Este usuário já está adicionado ao projeto"
@@ -99,6 +99,7 @@ def lambda_handler(event, context):
 
     if method == "DELETE":
         id = ObjectId(params["id"])
-        ToDoList.objects(id=id).delete()
+        obj = ToDoList.objects(id=id).first()
+        obj.delete()
 
         return {"statusCode": 200, "headers": headers}
