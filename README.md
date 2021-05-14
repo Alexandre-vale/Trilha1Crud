@@ -22,7 +22,7 @@ Pré-Requisitos:
 
 1. clone o repositório na sua máquina:
    ```shell
-   $ git clone <>
+   $ git clone git@github.com:Alexandre-vale/Trilha1Crud.git
    ```
 
 2. crie os arquivos .env:
