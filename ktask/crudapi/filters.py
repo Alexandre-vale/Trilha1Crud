@@ -20,7 +20,7 @@ def lambda_handler(event, context):
         "/get_by_list": "todolist",
         "/get_by_owner": "owner",
         "/get_by_status": "status",
-        "/get_from_user": "contribuitor",
+        "/get_by_user": "user",
     }
 
     path = event["path"]
@@ -30,36 +30,46 @@ def lambda_handler(event, context):
     if filters[path] == "todolist":
         queryset = ToDo.objects(todolist=query_filter).all()
     elif filters[path] == "owner":
-        queryset = ToDo.objects(owner=query_filter).all()
-    elif filters[path] == "contribuitor":
+        owner = query_filter.lower()
+        if "list" in querystring_parameters.keys():
+            list_mode = querystring_parameters["list"].lower() == "true"
+            queryset = (
+                ToDoList.objects(owner=owner).all()
+                if list_mode
+                else ToDo.objects(owner=owner).all()
+            )
+        else:
+            queryset = list(ToDoList.objects(owner=owner).all()) + list(
+                ToDo.objects(owner=owner).all()
+            )
+
+    elif filters[path] == "user":
         queryset = ToDoList.objects(owner=query_filter).all()
         tmp = ToDoList.objects.all()
 
         contrib = list(
             filter(
-                lambda x: query_filter in x.acces["contributors"]
-                or query_filter in x.acess["readers"],
+                lambda x: query_filter in x.access["contributors"]
+                or query_filter in x.access["readers"],
                 tmp,
             )
         )
-
         queryset = list(queryset) + contrib
     else:
         status = query_filter.lower()
         if "list" in querystring_parameters.keys():
-            list_mode = querystring_parameters["list"] == "True"
+            list_mode = querystring_parameters["list"].lower() == "true"
             queryset = (
                 ToDoList.objects(status=status).all()
                 if list_mode
                 else ToDo.objects(status=status).all()
             )
         else:
-            queryset = (
-                    list(ToDoList.objects(status=status).all())
-                    + list(ToDo.objects(status=status).all())
+            queryset = list(ToDoList.objects(status=status).all()) + list(
+                ToDo.objects(status=status).all()
             )
 
-    queryset = [todo.serialize() for todo in queryset]
+    queryset = [x.serialize() for x in queryset]
 
     return {
         "statusCode": 200,

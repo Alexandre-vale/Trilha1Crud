@@ -22,19 +22,25 @@ Resources:
             Path: /todo
             Method: get
 
-        ReadByStatus:
+        GetByStatus:
           Type: Api
           Properties:
             Path: /get_by_status
             Method: get
 
-        ReadByOwner:
+        GetByOwner:
           Type: Api
           Properties:
             Path: /get_by_owner
             Method: get
 
-        ReadByTodoList:
+        GetByUser:
+          Type: Api
+          Properties:
+            Path: /get_by_user
+            Method: get
+
+        GetByTodoList:
           Type: Api
           Properties:
             Path: /get_by_list

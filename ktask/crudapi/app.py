@@ -30,11 +30,13 @@ def lambda_handler(event, context):
 
     method = event["httpMethod"]
     path = event["path"]
-    filter_paths = ["/get_by_status", "/get_by_owner", "/get_by_list"]
+    filter_paths = ["/get_by_status", "/get_by_owner", "/get_by_list", "/get_by_user"]
     status = {"get": 200, "post": 200, "put": 200, "delete": 200}
     body = event["body"]
     f = json.loads(body) if body else {}
-    querystring_parameters = event["queryStringParameters"]
+    querystring_parameters = (
+        event["queryStringParameters"] if event["queryStringParameters"] else {}
+    )
 
     if method == "OPTIONS":
         return {"statusCode": 204, "headers": headers}
@@ -67,7 +69,7 @@ def lambda_handler(event, context):
                 body=f["body"],
                 owner=f["owner"],
                 todolist=f["todolist"],
-                assigment=f["assigment"],
+                assignment=f["assignment"],
                 created_at=datetime.now(),
                 last_update={"user": f["owner"], "date": datetime.now()},
                 deadline=deadline,
