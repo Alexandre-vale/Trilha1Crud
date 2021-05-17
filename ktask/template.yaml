@@ -40,6 +40,12 @@ Resources:
             Path: /get_by_user
             Method: get
 
+        GetByAccess:
+          Type: Api
+          Properties:
+            Path: /get_by_access
+            Method: get
+
         GetByTodoList:
           Type: Api
           Properties:
@@ -92,6 +98,12 @@ Resources:
           Properties:
             Path: /todolist
             Method: options
+
+        AddContributor:
+          Type: Api
+          Properties:
+            Path: /add_user
+            Method: put
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./crudapi

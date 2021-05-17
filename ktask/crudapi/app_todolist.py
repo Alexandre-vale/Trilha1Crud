@@ -59,6 +59,48 @@ def lambda_handler(event, context):
         }
 
     if method == "PUT":
+        if event["path"] == "/add_user":
+            id = params["id"]
+            readers = body["readers"]
+            contributors = body["contributors"]
+            buffer = []
+
+            t_list = ToDoList.objects(id=ObjectId(id)).first()
+            list_access = t_list.access
+
+            list(
+                map(
+                    lambda x: list_access["readers"].append(x)
+                    if x not in list_access["readers"] and x not in list_access["contributors"]
+                    else buffer.append(x),
+                    readers,
+                )
+            )
+            list(
+                map(
+                    lambda x: list_access["contributors"].append(x)
+                    if x not in list_access["readers"] and x not in list_access["contributors"]
+                    else buffer.append(x),
+                    contributors,
+                )
+            )
+
+            if buffer:
+                return {
+                    "statusCode": 400,
+                    "headers": headers,
+                    "body": json.dumps({"erro": "Usuario já adicionado"}),
+                }
+
+            t_list.update(access=list_access)
+            t_list = ToDoList.objects(id=ObjectId(id)).first()
+
+            return {
+                "statusCode": 200,
+                "headers": headers,
+                "body": json.dumps(t_list.serialize()),
+            }
+
         if "access" in body.keys():
             for reader in body["access"]["readers"]:
                 if (

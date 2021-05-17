@@ -58,28 +58,43 @@ def lambda_handler(event, context):
         queryset = list(queryset) + contrib
 
     elif filters[path] == "access":
-        raw_data = ToDoList.objects.all() #raw_data é a coleção de todos as listas
-        username = querystring_parameters["username"].lower() #username é um param que passamos
+        raw_data = ToDoList.objects.all()  # raw_data é a coleção de todos as listas
+        username = querystring_parameters[
+            "username"
+        ].lower()  # username é um param que passamos
         if query_filter == "all":
-            processed_data = list( #se o parametro access for exclusivamente all ele vai devolver uma lista com o user sendo qualquer um dos dois roles
-            filter(
-                lambda x: username in x.access["contributors"]
-                or username in x.access["readers"],
-                raw_data,
-            )
-        )
-
+            processed_data = {
+                "reader": [
+                    todolist.serialize()
+                    for todolist in list(
+                        filter(
+                            lambda x: username in x.access["readers"],
+                            raw_data,
+                        )
+                    )
+                ],
+                "contributor": [
+                    todolist.serialize()
+                    for todolist in list(
+                        filter(
+                            lambda x: username in x.access["contributors"],
+                            raw_data,
+                        )
+                    )
+                ],
+            }
         else:
-            processed_data = list(# se o parametro for qualquer outra coisa, ele vai procurar dentro de access pelo nome no param
-            filter(
-                lambda x: username in x.access[queryset],#isso diminui o tamanho da prog e tb deixa aberto pra novas roles, caso aconteça
-                raw_data,
-            ))
-            
-        queryset = processed_data
+            processed_data = [ x.serialize() for x in list(  # se o parametro for qualquer outra coisa, ele vai procurar dentro de access pelo nome no param
+                filter(
+                    lambda x: username
+                    in x.access[
+                        query_filter
+                    ],  # isso diminui o tamanho da prog e tb deixa aberto pra novas roles, caso aconteça
+                    raw_data,
+                )
+            )]
 
-
-
+        return {"statusCode": 200, "headers": headers, "body": processed_data}
 
     else:
         status = query_filter.lower()

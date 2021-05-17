@@ -30,7 +30,7 @@ def lambda_handler(event, context):
 
     method = event["httpMethod"]
     path = event["path"]
-    filter_paths = ["/get_by_status", "/get_by_owner", "/get_by_list", "/get_by_user"]
+    filter_paths = ["/get_by_status", "/get_by_owner", "/get_by_list", "/get_by_user", "/get_by_access"]
     status = {"get": 200, "post": 200, "put": 200, "delete": 200}
     body = event["body"]
     f = json.loads(body) if body else {}
@@ -44,7 +44,7 @@ def lambda_handler(event, context):
     if path in filter_paths:
         return filters.lambda_handler(event, context)
 
-    if path == "/todolist":
+    if path == "/todolist" or path == "/add_user":
         return app_todolist.lambda_handler(event, context)
 
     if method == "GET":
