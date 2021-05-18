@@ -66,7 +66,7 @@ def lambda_handler(event, context):
 
             ToDo.objects.create(
                 name=f["name"],
-                body=f["body"],
+                description=f["description"],
                 owner=f["owner"],
                 todolist=f["todolist"],
                 assignment=f["assignment"],

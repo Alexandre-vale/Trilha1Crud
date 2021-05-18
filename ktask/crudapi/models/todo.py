@@ -43,7 +43,7 @@ class ToDo(Document):
     """
 
     name = StringField(max_length=30)
-    body = StringField()
+    description = StringField()
     owner = StringField()
     todolist = StringField()
     assignment = StringField()
@@ -58,7 +58,7 @@ class ToDo(Document):
         return {
             "id": str(self.pk),
             "name": self.name,
-            "body": self.body,
+            "description": self.description,
             "owner": self.owner,
             "todolist": self.todolist,
             "assignment": self.assignment,
