@@ -14,7 +14,7 @@ def lambda_handler(event, context):
         {
             "Content-Type": "application/x-www-form-urlencoded",
             "grant_type": "authorization_code",
-            "client_id": "vjmavfrop927pfnk9jn15h2ft",
+            "client_id": "",
             "code": code,
             "redirect_uri": "http://localhost:3000/cognito",
         },
